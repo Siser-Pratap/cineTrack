@@ -22,7 +22,7 @@ export default function LandingPage() {
         
         <div className="flex flex-col sm:flex-row gap-4">
           <Button asChild size="lg" className="rounded-full px-8 text-base">
-            <Link href="/dashboard">
+            <Link href="/login">
               Go to Dashboard <ChevronRight className="w-4 h-4 ml-2" />
             </Link>
           </Button>
