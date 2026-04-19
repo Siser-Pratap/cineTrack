@@ -1,10 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { Sparkles, TrendingUp, Compass, Search, Plus, CheckCircle, Loader2, ExternalLink } from "lucide-react";
+import { Sparkles, TrendingUp, Compass, Search, Plus, CheckCircle, Loader2, ExternalLink, PlayCircle } from "lucide-react";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { TrailerDialog } from "@/components/TrailerDialog";
 
 export default function DiscoverPage() {
   const [prompt, setPrompt] = useState("");
@@ -13,6 +14,7 @@ export default function DiscoverPage() {
   const [aiReply, setAiReply] = useState<string | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [trailerMovie, setTrailerMovie] = useState<any | null>(null);
 
   const fetchRecommendations = async (customPrompt?: string, useHistory: boolean = false, append: boolean = false) => {
     setLoading(true);
@@ -193,14 +195,14 @@ export default function DiscoverPage() {
       )}
 
       {aiReply && !loading && (
-        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl p-6 mt-8 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 border-2 border-indigo-100 dark:border-indigo-900/50 rounded-2xl p-6 mt-8 shadow-md">
           <div className="flex items-start gap-4">
             <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex-shrink-0 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
               <Sparkles className="w-5 h-5" />
             </div>
-            <div>
-              <h3 className="font-semibold text-lg text-indigo-900 dark:text-indigo-300 mb-2">Gemini says:</h3>
-              <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+            <div className="flex-1">
+              <h3 className="font-semibold text-lg text-slate-900 dark:text-slate-100 mb-2">Gemini says:</h3>
+              <p className="text-slate-800 dark:text-slate-200 leading-relaxed whitespace-pre-wrap text-base">
                 {aiReply}
               </p>
             </div>
@@ -224,11 +226,19 @@ export default function DiscoverPage() {
                       className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="w-full h-full flex flex-col items-center justify-center bg-blue-900/40 backdrop-blur-md border border-blue-400/20 shadow-[0_4px_30px_rgba(0,0,0,0.1)] text-blue-200 p-4 text-center">
-                      <span className="font-semibold text-sm text-blue-100 line-clamp-3">{movie.title}</span>
+                    <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-200 to-slate-300 dark:from-slate-800 dark:to-slate-900 p-4 text-center">
+                      <span className="font-semibold text-sm text-slate-700 dark:text-slate-300 line-clamp-3">{movie.title}</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4">
+                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 gap-3">
+                    <Button 
+                      className="w-full bg-indigo-500 hover:bg-indigo-600 text-white border-none" 
+                      variant="outline"
+                      onClick={() => setTrailerMovie(movie)}
+                    >
+                      <PlayCircle className="w-4 h-4 mr-2" /> See Trailer
+                    </Button>
+                    
                     {movie.added ? (
                       <Button className="w-full bg-green-500 hover:bg-green-600 text-white" disabled>
                         <CheckCircle className="w-4 h-4 mr-2" /> Added
@@ -295,6 +305,14 @@ export default function DiscoverPage() {
             </div>
           )}
         </div>
+      )}
+
+      {trailerMovie && (
+        <TrailerDialog 
+          movie={trailerMovie} 
+          isOpen={!!trailerMovie} 
+          setIsOpen={(open) => !open && setTrailerMovie(null)} 
+        />
       )}
     </div>
   );

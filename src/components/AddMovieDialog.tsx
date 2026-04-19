@@ -4,7 +4,8 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Plus } from "lucide-react";
+import { Search, Plus, PlayCircle } from "lucide-react";
+import { TrailerDialog } from "./TrailerDialog";
 
 export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -13,6 +14,7 @@ export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
+  const [trailerMovie, setTrailerMovie] = useState<any | null>(null);
 
   const fetchMovies = async (searchQuery: string, pageNum: number, append: boolean = false) => {
     setLoading(true);
@@ -128,13 +130,18 @@ export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
                 )}
                 <div className="flex-1">
                   <h3 className="font-semibold">{movie.title} ({movie.releaseYear})</h3>
-                  {movie.genre !== "Various" && (
+                  {movie.genre && movie.genre !== "Various" && (
                     <p className="text-xs font-medium text-indigo-500 dark:text-indigo-400 mt-1">{movie.genre}</p>
                   )}
                   <p className="text-sm text-slate-500 line-clamp-2 mt-1">{movie.description}</p>
-                  <Button size="sm" className="mt-2" onClick={() => handleAdd(movie)}>
-                    Add to List
-                  </Button>
+                  <div className="flex gap-2 mt-3">
+                    <Button size="sm" onClick={() => handleAdd(movie)}>
+                      Add to List
+                    </Button>
+                    <Button size="sm" variant="outline" className="text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/50" onClick={() => setTrailerMovie(movie)}>
+                      <PlayCircle className="w-4 h-4 mr-2" /> Trailer
+                    </Button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -150,6 +157,14 @@ export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
           </div>
         </div>
       </Card>
+      
+      {trailerMovie && (
+        <TrailerDialog 
+          movie={trailerMovie} 
+          isOpen={!!trailerMovie} 
+          setIsOpen={(open) => !open && setTrailerMovie(null)} 
+        />
+      )}
     </div>
   );
 }

@@ -15,7 +15,7 @@ export async function POST(req: Request) {
 
     // Use the latest Gemini 3.1 Pro Preview model as requested
     const model = genAI.getGenerativeModel({
-      model: 'gemini-3.1-pro-preview',
+      model: 'gemini-2.5-flash',
     });
 
     let context = '';
