@@ -1,36 +1,93 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🎬 CineTrack - The Intelligent Movie Tracker
 
-## Getting Started
+CineTrack is a beautifully designed, full-stack movie tracking application built with **Next.js**, **Tailwind CSS**, and **Prisma**. It allows users to meticulously track the movies they want to watch, log their watched history, rate films, and discover new cinematic masterpieces using the power of **Google's Gemini AI**.
 
-First, run the development server:
+---
 
-```bash
+## ✨ Features
+
+- 📌 **To-Watch & Watched Dashboards**: Clean, grid-based interfaces to manage your movie backlog and your viewing history.
+- 🧠 **AI-Powered Discovery Engine**: Chat directly with **Gemini AI** to get personalized recommendations based on your current watch history, or ask it to find hidden gems and trending blockbusters.
+- 📊 **Exploratory Data Analysis (EDA)**: A dedicated Analytics page powered by `recharts` that visualizes your watching habits (Genre distributions, Release Decades, Completion rates, etc.).
+- 🖼️ **Rich OMDB Metadata Integration**: Automatically fetches official movie posters, genres, release years, plot summaries, and IMDB links.
+- 🔒 **PIN-Protected Access**: Secure your personal dashboards behind a sleek 6-digit passcode lock (with secure HTTP-Only cookies).
+- 🔍 **Live Debounced Search & Filtering**: Instantly search your massive collections and filter by precise genres.
+- 📱 **Fully Responsive & Dark Mode**: A premium UI/UX inspired by Apple and Letterboxd that looks gorgeous on mobile and desktop, automatically adapting to your system's light/dark preference.
+
+---
+
+## 🛠️ Tech Stack
+
+- **Framework**: [Next.js (App Router)](https://nextjs.org/)
+- **Language**: [TypeScript](https://www.typescriptlang.org/)
+- **Styling**: [Tailwind CSS](https://tailwindcss.com/) & [shadcn/ui](https://ui.shadcn.com/) concepts
+- **Database**: [MongoDB](https://www.mongodb.com/) via [Prisma ORM](https://www.prisma.io/)
+- **AI Intelligence**: [Google Generative AI (Gemini 3.1 Pro Preview)](https://ai.google.dev/)
+- **External Data**: [OMDB API](http://www.omdbapi.com/)
+- **Charts**: [Recharts](https://recharts.org/)
+
+---
+
+## 🚀 Getting Started
+
+Follow these steps to set up and run CineTrack on your local machine.
+
+### 1. Clone the repository
+\`\`\`bash
+git clone https://github.com/Siser-Pratap/cineTrack.git
+cd cineTrack
+\`\`\`
+
+### 2. Install dependencies
+\`\`\`bash
+npm install
+\`\`\`
+
+### 3. Environment Variables
+Create a \`.env\` file in the root directory of the project and add the following keys:
+
+\`\`\`env
+# MongoDB Connection String (from MongoDB Atlas)
+DATABASE_URL="mongodb+srv://<username>:<password>@<cluster-url>/cinetrack?retryWrites=true&w=majority"
+
+# Google Gemini API Key (Get from Google AI Studio)
+GEMINI_API_KEY="your_gemini_api_key"
+
+# OMDB API Key (Get from omdbapi.com)
+OMDB_API_KEY="your_omdb_api_key"
+
+# Your personal 6-digit login PIN
+APP_PIN="123456"
+\`\`\`
+
+### 4. Setup the Database
+Push the Prisma schema to your MongoDB cluster to initialize the collections:
+\`\`\`bash
+npx prisma db push
+npx prisma generate
+\`\`\`
+
+*(Optional)* If you have existing text files (`to_Watch.txt` or `Watched.txt`), you can run the import scripts to bulk-load your movies via the OMDB API:
+\`\`\`bash
+npx tsx scripts/import-movies.ts
+npx tsx scripts/import-watched.ts
+\`\`\`
+
+### 5. Run the Development Server
+\`\`\`bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+\`\`\`
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser. 
+Log in with the \`APP_PIN\` you set in your environment variables to access the dashboard!
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+---
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## 🏗️ Deployment
 
-## Learn More
+This project is fully optimized for deployment on **Vercel**. 
+Simply link your GitHub repository to Vercel, ensure you add all four Environment Variables in the Vercel project settings, and deploy!
 
-To learn more about Next.js, take a look at the following resources:
+---
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+*Crafted with ❤️ for film lovers.*
