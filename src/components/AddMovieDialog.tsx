@@ -62,16 +62,29 @@ export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
   };
 
   const handleAdd = async (movie: any) => {
-    await fetch('/api/movies', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        ...movie,
-        priority: 'Medium'
-      })
-    });
-    setIsOpen(false);
-    onAdd();
+    try {
+      const res = await fetch('/api/movies', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...movie,
+          priority: 'Medium'
+        })
+      });
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        alert(data.error || "Failed to add movie.");
+        return;
+      }
+      
+      setIsOpen(false);
+      onAdd();
+    } catch (e) {
+      console.error(e);
+      alert("Something went wrong adding this movie.");
+    }
   };
 
   if (!isOpen) {

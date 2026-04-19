@@ -28,16 +28,20 @@ export async function POST(req: Request) {
       Try to suggest movies they might like based on this, but do NOT suggest movies they already have in these lists.`;
     }
 
-    const systemPrompt = `You are CineTrack's intelligent movie recommendation engine. The user will ask for recommendations or you will receive their watch history.
-    Respond ONLY with a JSON array of movie objects. Do not include any markdown formatting outside the JSON array.
-    Each object MUST have these exact keys:
+    const systemPrompt = `You are CineTrack's intelligent movie recommendation engine. The user will ask for recommendations, ask questions about movies, or you will receive their watch history.
+    Respond ONLY with a valid JSON object. Do not include any markdown formatting outside the JSON object.
+    The JSON object MUST have these exact keys:
+    - "reply" (string, a conversational, friendly, and helpful response answering the user's query or explaining the recommendations)
+    - "movies" (array of objects, the movie recommendations. If no movies are relevant to the query, return an empty array [])
+    
+    Each movie object in the "movies" array MUST have these exact keys:
     - "title" (string)
     - "description" (string, a short engaging summary)
     - "genre" (string, comma-separated genres)
     - "language" (string)
     - "releaseYear" (number)
     
-    If the user asks for trending movies, provide 5 current popular movies. Make sure the response is a valid JSON array.`;
+    Make sure the response is a strictly valid JSON object.`;
 
     const finalPrompt = `${systemPrompt}\n\nUser request: ${prompt || "Recommend some great movies for me."}${context}`;
 
@@ -47,7 +51,9 @@ export async function POST(req: Request) {
     // Clean up potential markdown formatting from gemini
     text = text.replace(/```json/g, '').replace(/```/g, '').trim();
 
-    const movies = JSON.parse(text);
+    const responseJson = JSON.parse(text);
+    const reply = responseJson.reply || "";
+    const movies = responseJson.movies || [];
 
     // Enhance movies with OMDB data (Posters & IMDB Links)
     const omdbApiKey = process.env.OMDB_API_KEY;
@@ -68,10 +74,10 @@ export async function POST(req: Request) {
         }
         return movie;
       }));
-      return NextResponse.json(enhancedMovies);
+      return NextResponse.json({ reply, results: enhancedMovies });
     }
 
-    return NextResponse.json(movies);
+    return NextResponse.json({ reply, results: movies });
 
   } catch (error) {
     console.error("Gemini API Error:", error);

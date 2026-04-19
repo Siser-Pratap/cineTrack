@@ -10,6 +10,7 @@ export default function DiscoverPage() {
   const [prompt, setPrompt] = useState("");
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState<any[]>([]);
+  const [aiReply, setAiReply] = useState<string | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
 
@@ -47,9 +48,11 @@ export default function DiscoverPage() {
       if (!response.ok) throw new Error(data.error || "Failed to fetch recommendations");
       
       if (append) {
-        setResults(prev => [...prev, ...data]);
+        setResults(prev => [...prev, ...(data.results || [])]);
+        if (data.reply) setAiReply(data.reply);
       } else {
-        setResults(data);
+        setResults(data.results || []);
+        setAiReply(data.reply || null);
       }
     } catch (err: any) {
       setError(err.message);
@@ -60,7 +63,7 @@ export default function DiscoverPage() {
   const handleAddMovie = async (movie: any) => {
     setAddingId(movie.title);
     try {
-      await fetch('/api/movies', {
+      const res = await fetch('/api/movies', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -75,10 +78,18 @@ export default function DiscoverPage() {
           status: 'ToWatch'
         })
       });
-      // Mark as added in UI locally
-      setResults(results.map(r => r.title === movie.title ? { ...r, added: true } : r));
+      
+      const data = await res.json();
+      
+      if (!res.ok) {
+        alert(data.error || "Failed to add movie.");
+      } else {
+        // Mark as added in UI locally only if success
+        setResults(results.map(r => r.title === movie.title ? { ...r, added: true } : r));
+      }
     } catch (e) {
       console.error(e);
+      alert("Something went wrong adding this movie.");
     }
     setAddingId(null);
   };
@@ -173,7 +184,7 @@ export default function DiscoverPage() {
         {error && <p className="text-red-500 mt-4 text-sm font-medium">{error}</p>}
       </div>
 
-      {loading && results.length === 0 && (
+      {loading && results.length === 0 && !aiReply && (
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6 mt-8">
           {[1, 2, 3, 4, 5].map((i) => (
             <div key={i} className="animate-pulse bg-slate-200 dark:bg-slate-800 rounded-xl aspect-[2/3]" />
@@ -181,10 +192,26 @@ export default function DiscoverPage() {
         </div>
       )}
 
+      {aiReply && !loading && (
+        <div className="bg-indigo-50 dark:bg-indigo-950/30 border border-indigo-100 dark:border-indigo-900/50 rounded-2xl p-6 mt-8 shadow-sm">
+          <div className="flex items-start gap-4">
+            <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/50 flex-shrink-0 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+              <Sparkles className="w-5 h-5" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-lg text-indigo-900 dark:text-indigo-300 mb-2">Gemini says:</h3>
+              <p className="text-slate-700 dark:text-slate-300 leading-relaxed whitespace-pre-wrap">
+                {aiReply}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
       {results.length > 0 && (
         <div className="mt-8">
           <h2 className="text-xl font-bold mb-6 flex justify-between items-center">
-            <span>AI Recommendations</span>
+            <span>{aiReply ? "Mentioned Movies" : "AI Recommendations"}</span>
           </h2>
           <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-6">
             {results.map((movie, idx) => (

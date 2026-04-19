@@ -18,6 +18,21 @@ export async function GET() {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
+    
+    // Prevent duplicates by title
+    const existing = await prisma.movie.findFirst({
+      where: { 
+        title: {
+          equals: body.title,
+          mode: 'insensitive' // MongoDB Prisma driver feature for case-insensitive match
+        }
+      }
+    });
+
+    if (existing) {
+      return NextResponse.json({ error: 'Movie already exists in your list.' }, { status: 409 });
+    }
+
     const movie = await prisma.movie.create({
       data: {
         title: body.title,
