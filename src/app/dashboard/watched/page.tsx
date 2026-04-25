@@ -11,6 +11,7 @@ export default function WatchedPage() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [genreFilter, setGenreFilter] = useState("All");
+  const [yearFilter, setYearFilter] = useState("");
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -24,7 +25,7 @@ export default function WatchedPage() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedQuery, genreFilter]);
+  }, [debouncedQuery, genreFilter, yearFilter]);
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -53,9 +54,10 @@ export default function WatchedPage() {
     return movies.filter(m => {
       const matchesSearch = m.title.toLowerCase().includes(debouncedQuery.toLowerCase());
       const matchesGenre = genreFilter === "All" || (m.genre && m.genre.toLowerCase().includes(genreFilter.toLowerCase()));
-      return matchesSearch && matchesGenre;
+      const matchesYear = yearFilter === "" || (m.releaseYear && m.releaseYear.toString() === yearFilter);
+      return matchesSearch && matchesGenre && matchesYear;
     });
-  }, [movies, debouncedQuery, genreFilter]);
+  }, [movies, debouncedQuery, genreFilter, yearFilter]);
 
   const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
   const currentMovies = filteredMovies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -63,14 +65,14 @@ export default function WatchedPage() {
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight mb-2">Watched Movies</h1>
-        <p className="text-slate-500 dark:text-slate-400">Your personal movie diary. Rate and review the films you've seen.</p>
+        <h1 className="text-3xl font-bold tracking-tight mb-2">Watched Titles</h1>
+        <p className="text-slate-500 dark:text-slate-400">Your personal media diary. Rate and review the titles you've seen.</p>
       </div>
 
       {!loading && movies.length > 0 && (
-        <div className="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
           <Input 
-            placeholder="Search movies by title..." 
+            placeholder="Search titles..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="max-w-xs"
@@ -82,6 +84,13 @@ export default function WatchedPage() {
           >
             {PRESET_GENRES.map(g => <option key={g} value={g}>{g}</option>)}
           </select>
+          <Input
+            type="number"
+            placeholder="Year (e.g. 2023)"
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+            className="w-32"
+          />
         </div>
       )}
 
@@ -93,12 +102,12 @@ export default function WatchedPage() {
         </div>
       ) : movies.length === 0 ? (
         <div className="text-center py-20 border-2 border-dashed border-slate-200 dark:border-slate-800 rounded-xl">
-          <h3 className="text-xl font-medium text-slate-500 mb-4">You haven't marked any movies as watched yet</h3>
+          <h3 className="text-xl font-medium text-slate-500 mb-4">You haven't marked any titles as watched yet</h3>
           <p className="text-slate-400 mb-6">Go to your To Watch list to start tracking.</p>
         </div>
       ) : filteredMovies.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-slate-500">No movies match your search/filter.</p>
+          <p className="text-slate-500">No titles match your search/filter.</p>
         </div>
       ) : (
         <div className="space-y-8 pb-12">

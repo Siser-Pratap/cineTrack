@@ -18,6 +18,7 @@ model Movie {
   imdbLink     String?
   priority     String    @default("Medium") // Low, Medium, High
   status       String    @default("ToWatch") // ToWatch, Watched
+  type         String    @default("movie") // movie, series, episode
   rating       Int?      // For watched movies (1-5)
   review       String?
   watchedAt    DateTime?

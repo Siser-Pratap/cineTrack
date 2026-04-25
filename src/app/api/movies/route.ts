@@ -30,7 +30,7 @@ export async function POST(req: Request) {
     });
 
     if (existing) {
-      return NextResponse.json({ error: 'Movie already exists in your list.' }, { status: 409 });
+      return NextResponse.json({ error: 'Title already exists in your list.' }, { status: 409 });
     }
 
     const movie = await prisma.movie.create({
@@ -43,11 +43,12 @@ export async function POST(req: Request) {
         posterUrl: body.posterUrl,
         imdbLink: body.imdbLink,
         priority: body.priority || 'Medium',
-        status: 'ToWatch'
+        status: 'ToWatch',
+        type: body.type || 'movie'
       }
     });
     return NextResponse.json(movie);
   } catch (error) {
-    return NextResponse.json({ error: 'Failed to create movie' }, { status: 500 });
+    return NextResponse.json({ error: 'Failed to create title' }, { status: 500 });
   }
 }

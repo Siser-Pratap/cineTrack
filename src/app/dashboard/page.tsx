@@ -12,6 +12,8 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState("");
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [genreFilter, setGenreFilter] = useState("All");
+  const [yearFilter, setYearFilter] = useState("");
+  const [priorityFilter, setPriorityFilter] = useState("All");
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,7 +27,7 @@ export default function Home() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedQuery, genreFilter]);
+  }, [debouncedQuery, genreFilter, yearFilter, priorityFilter]);
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -63,9 +65,11 @@ export default function Home() {
     return movies.filter(m => {
       const matchesSearch = m.title.toLowerCase().includes(debouncedQuery.toLowerCase());
       const matchesGenre = genreFilter === "All" || (m.genre && m.genre.toLowerCase().includes(genreFilter.toLowerCase()));
-      return matchesSearch && matchesGenre;
+      const matchesYear = yearFilter === "" || (m.releaseYear && m.releaseYear.toString() === yearFilter);
+      const matchesPriority = priorityFilter === "All" || m.priority === priorityFilter;
+      return matchesSearch && matchesGenre && matchesYear && matchesPriority;
     });
-  }, [movies, debouncedQuery, genreFilter]);
+  }, [movies, debouncedQuery, genreFilter, yearFilter, priorityFilter]);
 
   const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
   const currentMovies = filteredMovies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -75,15 +79,15 @@ export default function Home() {
       <div className="flex justify-between items-end">
         <div>
           <h1 className="text-3xl font-bold tracking-tight mb-2">To Watch List</h1>
-          <p className="text-slate-500 dark:text-slate-400">Movies you want to watch in the future.</p>
+          <p className="text-slate-500 dark:text-slate-400">Movies and shows you want to watch in the future.</p>
         </div>
         <AddMovieDialog onAdd={fetchMovies} />
       </div>
 
       {!loading && movies.length > 0 && (
-        <div className="flex flex-col sm:flex-row gap-4 bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
+        <div className="flex flex-col sm:flex-row flex-wrap gap-4 bg-white dark:bg-slate-950 p-4 rounded-xl border border-slate-200 dark:border-slate-800">
           <Input 
-            placeholder="Search movies by title..." 
+            placeholder="Search titles..." 
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="max-w-xs"
@@ -94,6 +98,23 @@ export default function Home() {
             onChange={(e) => setGenreFilter(e.target.value)}
           >
             {PRESET_GENRES.map(g => <option key={g} value={g}>{g}</option>)}
+          </select>
+          <Input
+            type="number"
+            placeholder="Year (e.g. 2023)"
+            value={yearFilter}
+            onChange={(e) => setYearFilter(e.target.value)}
+            className="w-32"
+          />
+          <select 
+            className="flex h-9 rounded-md border border-slate-200 bg-transparent px-3 py-1 text-sm shadow-sm dark:border-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950"
+            value={priorityFilter}
+            onChange={(e) => setPriorityFilter(e.target.value)}
+          >
+            <option value="All">All Priorities</option>
+            <option value="High">High</option>
+            <option value="Medium">Medium</option>
+            <option value="Low">Low</option>
           </select>
         </div>
       )}
@@ -111,7 +132,7 @@ export default function Home() {
         </div>
       ) : filteredMovies.length === 0 ? (
         <div className="text-center py-10">
-          <p className="text-slate-500">No movies match your search/filter.</p>
+          <p className="text-slate-500">No titles match your search/filter.</p>
         </div>
       ) : (
         <div className="space-y-8 pb-12">

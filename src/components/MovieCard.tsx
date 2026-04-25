@@ -1,12 +1,9 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { CheckCircle, ExternalLink, Film, Edit, Info } from "lucide-react";
-import { useState } from "react";
-import { EditMovieDialog } from "./EditMovieDialog";
+import { CheckCircle, ExternalLink, Film, Info } from "lucide-react";
 import Link from 'next/link';
 
 export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatched?: (id: string) => void, onUpdate?: () => void }) {
-  const [isEditOpen, setIsEditOpen] = useState(false);
   const hasImage = movie.posterUrl && movie.posterUrl !== 'N/A' && !movie.posterUrl.includes('placeholder.com');
 
   return (
@@ -26,11 +23,11 @@ export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatche
             </div>
           )}
           
-          {/* Hover overlay */}
-          <div className="absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 gap-2">
+          {/* Hover overlay - Desktop Only */}
+          <div className="hidden md:flex absolute inset-0 bg-black/70 opacity-0 group-hover:opacity-100 transition-opacity flex-col items-center justify-center p-4 gap-2 z-10">
             <Button className="w-full bg-indigo-500 hover:bg-indigo-600 text-white border-none" variant="outline" asChild>
-              <Link href={`/dashboard/movie/${movie.id}`}>
-                <Info className="w-4 h-4 mr-2" /> View Details
+              <Link href={`/dashboard/movie/${movie.id}`} className="flex p-2 gap-2">
+                <Info className="w-4 h-4" /> View Details
               </Link>
             </Button>
             
@@ -41,16 +38,6 @@ export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatche
                 onClick={() => onWatched(movie.id)}
               >
                 <CheckCircle className="w-4 h-4 mr-2" /> Mark Watched
-              </Button>
-            )}
-            
-            {onUpdate && (
-              <Button 
-                className="w-full bg-transparent text-white border-white hover:bg-white hover:text-black" 
-                variant="outline"
-                onClick={() => setIsEditOpen(true)}
-              >
-                <Edit className="w-4 h-4 mr-2" /> Edit Details
               </Button>
             )}
           </div>
@@ -64,40 +51,56 @@ export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatche
             </span>
           </div>
         </div>
-        <CardContent className="p-4 flex-1 flex flex-col">
+        <CardContent className="p-4 flex-1 flex flex-col min-w-0">
           <Link href={`/dashboard/movie/${movie.id}`} passHref>
-            <h3 className="font-semibold text-lg line-clamp-1 hover:underline cursor-pointer" title={movie.title}>{movie.title}</h3>
+            <h3 className="font-semibold text-lg line-clamp-1 hover:underline cursor-pointer mb-1.5 text-slate-900 dark:text-slate-100" title={movie.title}>{movie.title}</h3>
           </Link>
           <div className="flex flex-wrap items-center text-xs text-slate-500 dark:text-slate-400 mt-1 gap-x-2 gap-y-1 mb-2">
-            <span>{movie.releaseYear}</span>
+            {movie.type && (
+              <span className="shrink-0 uppercase text-[10px] font-bold bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">
+                {movie.type}
+              </span>
+            )}
+            <span className="shrink-0">{movie.releaseYear}</span>
             {movie.genre && movie.genre !== "Various" && (
               <>
-                <span>•</span>
-                <span className="line-clamp-1 text-indigo-500 font-medium" title={movie.genre}>{movie.genre}</span>
+                <span className="shrink-0">•</span>
+                <span className="line-clamp-1 text-indigo-500 font-medium break-all" title={movie.genre}>{movie.genre}</span>
               </>
             )}
           </div>
-          {movie.description && movie.description !== "Click Add to Watchlist to save this movie." && (
-            <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mt-1 mb-2">
+          {movie.description && movie.description !== "Click Add to Watchlist to save this title." && movie.description !== "Click Add to Watchlist to save this movie." && (
+            <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2 mt-1.5 mb-3">
               {movie.description}
             </p>
           )}
           {movie.rating && movie.status === 'Watched' && (
-             <div className="mt-auto flex items-center gap-1 text-yellow-500 pt-2">
+             <div className="mt-auto flex items-center gap-1 text-yellow-500 pt-2 mb-2">
                {'★'.repeat(movie.rating)}{'☆'.repeat(5 - movie.rating)}
              </div>
           )}
+          
+          {/* Mobile Actions */}
+          <div className="mt-auto pt-4 flex flex-col gap-2 md:hidden">
+            <Button className="w-full bg-indigo-500 hover:bg-indigo-600 text-white border-none" size="sm" asChild>
+              <Link href={`/dashboard/movie/${movie.id}`} className="flex p-2 gap-2">
+                <Info className="w-4 h-4" /> View Details
+              </Link>
+            </Button>
+            
+            {movie.status === 'ToWatch' && onWatched && (
+              <Button 
+                className="w-full" 
+                size="sm"
+                variant="default"
+                onClick={() => onWatched(movie.id)}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" /> Mark Watched
+              </Button>
+            )}
+          </div>
         </CardContent>
       </Card>
-      
-      {isEditOpen && onUpdate && (
-        <EditMovieDialog 
-          movie={movie} 
-          isOpen={isEditOpen} 
-          setIsOpen={setIsEditOpen} 
-          onUpdate={onUpdate} 
-        />
-      )}
     </>
   );
 }

@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
 import { Loader2 } from "lucide-react";
 
-export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie: any, isOpen: boolean, setIsOpen: (b: boolean) => void, onUpdate: () => void }) {
+export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie: any, isOpen: boolean, setIsOpen: (b: boolean) => void, onUpdate: (action?: 'update' | 'delete') => void }) {
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     title: movie.title || "",
@@ -42,7 +42,7 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
       }
       
       setIsOpen(false);
-      onUpdate();
+      onUpdate('update');
     } catch (err) {
       console.error(err);
     }
@@ -50,12 +50,12 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
   };
 
   const handleDelete = async () => {
-    if (!confirm("Are you sure you want to delete this movie?")) return;
+    if (!confirm("Are you sure you want to delete this title?")) return;
     setLoading(true);
     try {
       await fetch(`/api/movies/${movie.id}`, { method: 'DELETE' });
       setIsOpen(false);
-      onUpdate();
+      onUpdate('delete');
     } catch (err) {
       console.error(err);
     }
@@ -68,23 +68,24 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
       <Card className="w-full max-w-md bg-white dark:bg-slate-900 border-none shadow-2xl p-6">
         <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold">Edit Details</h2>
-          <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)}>✕</Button>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Edit Details</h2>
+          <Button variant="ghost" size="icon" className="text-slate-500 hover:text-slate-700 dark:text-slate-400 dark:hover:text-slate-200" onClick={() => setIsOpen(false)}>✕</Button>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="text-sm font-medium mb-1 block">Title</label>
+            <label className="text-sm font-medium mb-1 block text-slate-700 dark:text-slate-300">Title</label>
             <Input 
               value={formData.title} 
               onChange={e => setFormData({...formData, title: e.target.value})} 
               required
+              className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-800"
             />
           </div>
           <div>
-            <label className="text-sm font-medium mb-1 block">Genre</label>
+            <label className="text-sm font-medium mb-1 block text-slate-700 dark:text-slate-300">Genre</label>
             <select 
-              className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-sm shadow-sm dark:border-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950"
+              className="flex h-9 w-full rounded-md border border-slate-200 bg-white dark:bg-slate-950 px-3 py-1 text-sm shadow-sm dark:border-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 dark:focus-visible:ring-slate-300 text-slate-900 dark:text-slate-100"
               value={formData.genre}
               onChange={e => setFormData({...formData, genre: e.target.value})}
             >
@@ -108,9 +109,9 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
           
           {movie.status === 'ToWatch' && (
             <div>
-              <label className="text-sm font-medium mb-1 block">Priority</label>
+              <label className="text-sm font-medium mb-1 block text-slate-700 dark:text-slate-300">Priority</label>
               <select 
-                className="flex h-9 w-full rounded-md border border-slate-200 bg-transparent px-3 py-1 text-sm shadow-sm dark:border-slate-800"
+                className="flex h-9 w-full rounded-md border border-slate-200 bg-white dark:bg-slate-950 px-3 py-1 text-sm shadow-sm dark:border-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 dark:focus-visible:ring-slate-300 text-slate-900 dark:text-slate-100"
                 value={formData.priority}
                 onChange={e => setFormData({...formData, priority: e.target.value})}
               >
@@ -124,18 +125,19 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
           {movie.status === 'Watched' && (
             <>
               <div>
-                <label className="text-sm font-medium mb-1 block">Rating (1-5)</label>
+                <label className="text-sm font-medium mb-1 block text-slate-700 dark:text-slate-300">Rating (1-5)</label>
                 <Input 
                   type="number" 
                   min="1" max="5" 
                   value={formData.rating || ''} 
                   onChange={e => setFormData({...formData, rating: parseInt(e.target.value) || 0})} 
+                  className="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 border-slate-200 dark:border-slate-800"
                 />
               </div>
               <div>
-                <label className="text-sm font-medium mb-1 block">Review</label>
+                <label className="text-sm font-medium mb-1 block text-slate-700 dark:text-slate-300">Review</label>
                 <textarea 
-                  className="flex w-full rounded-md border border-slate-200 bg-transparent px-3 py-2 text-sm shadow-sm dark:border-slate-800 min-h-[80px]"
+                  className="flex w-full rounded-md border border-slate-200 bg-white dark:bg-slate-950 px-3 py-2 text-sm shadow-sm dark:border-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950 dark:focus-visible:ring-slate-300 text-slate-900 dark:text-slate-100 min-h-[80px]"
                   value={formData.review || ""}
                   onChange={e => setFormData({...formData, review: e.target.value})}
                 />
@@ -143,14 +145,16 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
             </>
           )}
 
-          <div className="flex justify-between mt-8 pt-4 border-t border-slate-200 dark:border-slate-800">
-            <Button type="button" variant="destructive" onClick={handleDelete} disabled={loading}>
-              Delete
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-between mt-8 pt-4 border-t border-slate-200 dark:border-slate-800 gap-3 sm:gap-4">
+            <Button type="button" variant="destructive" className="w-full sm:w-auto py-5 sm:py-2" onClick={handleDelete} disabled={loading}>
+              <span className="truncate">Delete</span>
             </Button>
-            <div className="space-x-2">
-              <Button type="button" variant="outline" onClick={() => setIsOpen(false)}>Cancel</Button>
-              <Button type="submit" disabled={loading}>
-                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin" />} Save
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+              <Button type="button" variant="outline" className="w-full sm:w-auto py-5 sm:py-2" onClick={() => setIsOpen(false)}>
+                <span className="truncate">Cancel</span>
+              </Button>
+              <Button type="submit" className="w-full sm:w-auto py-5 sm:py-2" disabled={loading}>
+                {loading && <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" />} <span className="truncate">Save</span>
               </Button>
             </div>
           </div>

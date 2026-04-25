@@ -13,7 +13,7 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: 'OMDB API Key is missing.' }, { status: 500 });
     }
 
-    const res = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(q)}&type=movie&page=${page}`);
+    const res = await fetch(`http://www.omdbapi.com/?apikey=${apiKey}&s=${encodeURIComponent(q)}&page=${page}`);
     const data = await res.json();
     
     if (data.Response === "True") {
@@ -34,7 +34,8 @@ export async function GET(req: Request) {
               description: detailData.Plot !== "N/A" ? detailData.Plot : "Click Add to Watchlist to save this movie.", 
               genre: detailData.Genre !== "N/A" ? detailData.Genre : "Various", 
               language: detailData.Language !== "N/A" ? detailData.Language : "Various",
-              runtime: detailData.Runtime
+              runtime: detailData.Runtime,
+              type: detailData.Type || m.Type || "movie"
             };
           }
         } catch (e) {
@@ -48,9 +49,10 @@ export async function GET(req: Request) {
           releaseYear: parseInt(m.Year) || null,
           posterUrl: m.Poster !== "N/A" ? m.Poster : null,
           imdbLink: `https://www.imdb.com/title/${m.imdbID}/`,
-          description: "Click Add to Watchlist to save this movie.", 
+          description: "Click Add to Watchlist to save this title.", 
           genre: "Various", 
-          language: "Various"
+          language: "Various",
+          type: m.Type || "movie"
         };
       }));
       

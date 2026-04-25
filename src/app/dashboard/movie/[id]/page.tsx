@@ -5,6 +5,7 @@ import { Film, Calendar, Languages, ArrowLeft, PlayCircle, ExternalLink } from '
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
+import { EditMovieButton } from '@/components/EditMovieButton';
 
 async function getMovie(id: string) {
   try {
@@ -30,13 +31,14 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
 
   return (
     <div className="max-w-5xl mx-auto pb-12 animate-in fade-in duration-500">
-      <div className="mb-6">
+      <div className="mb-6 flex justify-between items-center flex-wrap gap-4">
         <Button variant="outline" asChild>
           <Link href={movie.status === 'Watched' ? '/dashboard/watched' : '/dashboard'}>
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to {movie.status === 'Watched' ? 'Watched List' : 'To Watch List'}
           </Link>
         </Button>
+        <EditMovieButton movie={movie} />
       </div>
 
       <div className="grid md:grid-cols-[300px_1fr] gap-8 items-start">
