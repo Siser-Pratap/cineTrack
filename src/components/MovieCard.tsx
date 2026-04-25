@@ -1,10 +1,25 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { CheckCircle, ExternalLink, Film, Info } from "lucide-react";
+import { CheckCircle, ExternalLink, Film, Info, Trash2, Loader2 } from "lucide-react";
 import Link from 'next/link';
+import { useState } from "react";
 
 export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatched?: (id: string) => void, onUpdate?: () => void }) {
+  const [isDeleting, setIsDeleting] = useState(false);
   const hasImage = movie.posterUrl && movie.posterUrl !== 'N/A' && !movie.posterUrl.includes('placeholder.com');
+
+  const handleDelete = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!confirm("Are you sure you want to remove this title?")) return;
+    setIsDeleting(true);
+    try {
+      await fetch(`/api/movies/${movie.id}`, { method: 'DELETE' });
+      if (onUpdate) onUpdate();
+    } catch (err) {
+      console.error(err);
+      setIsDeleting(false);
+    }
+  };
 
   return (
     <>
@@ -40,6 +55,16 @@ export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatche
                 <CheckCircle className="w-4 h-4 mr-2" /> Mark Watched
               </Button>
             )}
+            
+            <Button 
+              className="w-full bg-red-500/90 hover:bg-red-600 text-white border-none" 
+              variant="outline"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              Remove
+            </Button>
           </div>
           
           <div className="absolute top-2 right-2">
@@ -98,6 +123,17 @@ export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatche
                 <CheckCircle className="w-4 h-4 mr-2" /> Mark Watched
               </Button>
             )}
+            
+            <Button 
+              className="w-full" 
+              size="sm"
+              variant="destructive"
+              onClick={handleDelete}
+              disabled={isDeleting}
+            >
+              {isDeleting ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Trash2 className="w-4 h-4 mr-2" />}
+              Remove
+            </Button>
           </div>
         </CardContent>
       </Card>

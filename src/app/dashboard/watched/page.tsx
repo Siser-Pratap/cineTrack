@@ -12,6 +12,7 @@ export default function WatchedPage() {
   const [debouncedQuery, setDebouncedQuery] = useState("");
   const [genreFilter, setGenreFilter] = useState("All");
   const [yearFilter, setYearFilter] = useState("");
+  const [ratingFilter, setRatingFilter] = useState("All");
   
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -25,7 +26,7 @@ export default function WatchedPage() {
   // Reset to page 1 when filters change
   useEffect(() => {
     setCurrentPage(1);
-  }, [debouncedQuery, genreFilter, yearFilter]);
+  }, [debouncedQuery, genreFilter, yearFilter, ratingFilter]);
 
   const fetchMovies = async () => {
     setLoading(true);
@@ -55,9 +56,10 @@ export default function WatchedPage() {
       const matchesSearch = m.title.toLowerCase().includes(debouncedQuery.toLowerCase());
       const matchesGenre = genreFilter === "All" || (m.genre && m.genre.toLowerCase().includes(genreFilter.toLowerCase()));
       const matchesYear = yearFilter === "" || (m.releaseYear && m.releaseYear.toString() === yearFilter);
-      return matchesSearch && matchesGenre && matchesYear;
+      const matchesRating = ratingFilter === "All" || (m.rating && m.rating.toString() === ratingFilter);
+      return matchesSearch && matchesGenre && matchesYear && matchesRating;
     });
-  }, [movies, debouncedQuery, genreFilter, yearFilter]);
+  }, [movies, debouncedQuery, genreFilter, yearFilter, ratingFilter]);
 
   const totalPages = Math.ceil(filteredMovies.length / itemsPerPage);
   const currentMovies = filteredMovies.slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage);
@@ -91,6 +93,18 @@ export default function WatchedPage() {
             onChange={(e) => setYearFilter(e.target.value)}
             className="w-32"
           />
+          <select 
+            className="flex h-9 rounded-md border border-slate-200 bg-transparent px-3 py-1 text-sm shadow-sm dark:border-slate-800 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-slate-950"
+            value={ratingFilter}
+            onChange={(e) => setRatingFilter(e.target.value)}
+          >
+            <option value="All">All Ratings</option>
+            <option value="5">5 Stars (Masterpiece)</option>
+            <option value="4">4 Stars (Great)</option>
+            <option value="3">3 Stars (Good)</option>
+            <option value="2">2 Stars (Okay)</option>
+            <option value="1">1 Star (Poor)</option>
+          </select>
         </div>
       )}
 

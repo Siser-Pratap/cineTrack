@@ -48,7 +48,7 @@ export function TrailerDialog({ movie, isOpen, setIsOpen }: { movie: any, isOpen
           <h2 className="text-xl font-bold text-white line-clamp-1">{movie.title} - Trailer</h2>
           <Button variant="ghost" size="icon" className="text-slate-400 hover:text-white hover:bg-slate-800 shrink-0" onClick={() => setIsOpen(false)}>✕</Button>
         </div>
-        <div className="relative w-full aspect-video bg-black flex items-center justify-center">
+        <div className="relative w-full aspect-video min-h-[200px] bg-black flex items-center justify-center">
           {loading && (
             <div className="flex flex-col items-center text-slate-400">
               <Loader2 className="w-8 h-8 animate-spin mb-4" />
@@ -66,14 +66,26 @@ export function TrailerDialog({ movie, isOpen, setIsOpen }: { movie: any, isOpen
           )}
           
           {videoId && !loading && (
-            <iframe
-              className="absolute top-0 left-0 w-full h-full"
-              src={`https://www.youtube.com/embed/${videoId}?autoplay=1`}
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-              allowFullScreen
-            ></iframe>
+            <div className="w-full h-full">
+              <iframe
+                className="w-full h-full"
+                src={`https://www.youtube.com/embed/${videoId}?playsinline=1&rel=0`}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+              ></iframe>
+            </div>
           )}
         </div>
+        {videoId && !loading && (
+          <div className="bg-slate-900 p-3 border-t border-slate-800 flex justify-between items-center flex-wrap gap-2 text-sm">
+            <span className="text-slate-400">Video not playing? Mobile browsers may block some trailers.</span>
+            <Button variant="secondary" size="sm" className="bg-indigo-600 hover:bg-indigo-700 text-white border-none" asChild>
+              <a href={`https://www.youtube.com/watch?v=${videoId}`} target="_blank" rel="noopener noreferrer">
+                Open in YouTube App
+              </a>
+            </Button>
+          </div>
+        )}
       </Card>
     </div>
   );

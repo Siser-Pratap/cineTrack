@@ -49,6 +49,33 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
     setLoading(false);
   };
 
+  const handleMoveToWatchlist = async () => {
+    if (!confirm("Move this title back to your To Watch list? This will remove its rating and review.")) return;
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/movies/${movie.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          status: 'ToWatch',
+          rating: null,
+          review: null,
+          watchedAt: null
+        })
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to move to watchlist');
+      }
+      
+      setIsOpen(false);
+      onUpdate('delete'); // Treat as 'delete' from Watched page to trigger redirect
+    } catch (err) {
+      console.error(err);
+    }
+    setLoading(false);
+  };
+
   const handleDelete = async () => {
     if (!confirm("Are you sure you want to delete this title?")) return;
     setLoading(true);
@@ -146,9 +173,16 @@ export function EditMovieDialog({ movie, isOpen, setIsOpen, onUpdate }: { movie:
           )}
 
           <div className="flex flex-col-reverse sm:flex-row sm:justify-between mt-8 pt-4 border-t border-slate-200 dark:border-slate-800 gap-3 sm:gap-4">
-            <Button type="button" variant="destructive" className="w-full sm:w-auto py-5 sm:py-2" onClick={handleDelete} disabled={loading}>
-              <span className="truncate">Delete</span>
-            </Button>
+            <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
+              <Button type="button" variant="destructive" className="w-full sm:w-auto py-5 sm:py-2" onClick={handleDelete} disabled={loading}>
+                <span className="truncate">Delete</span>
+              </Button>
+              {movie.status === 'Watched' && (
+                <Button type="button" variant="outline" className="w-full sm:w-auto py-5 sm:py-2 text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/50" onClick={handleMoveToWatchlist} disabled={loading}>
+                  <span className="truncate">Move to Watchlist</span>
+                </Button>
+              )}
+            </div>
             <div className="flex flex-col sm:flex-row gap-3 sm:gap-2">
               <Button type="button" variant="outline" className="w-full sm:w-auto py-5 sm:py-2" onClick={() => setIsOpen(false)}>
                 <span className="truncate">Cancel</span>

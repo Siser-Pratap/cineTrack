@@ -230,7 +230,8 @@ export default function DiscoverPage() {
                       <span className="font-semibold text-sm text-slate-700 dark:text-slate-300 line-clamp-3">{movie.title}</span>
                     </div>
                   )}
-                  <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center p-4 gap-3">
+                  {/* Hover overlay - Desktop Only */}
+                  <div className="hidden md:flex absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex-col items-center justify-center p-4 gap-3 z-10">
                     <Button 
                       className="w-full bg-indigo-500 hover:bg-indigo-600 text-white border-none" 
                       variant="outline"
@@ -256,22 +257,56 @@ export default function DiscoverPage() {
                     )}
                   </div>
                 </div>
-                <CardContent className="p-4 flex-1 flex flex-col">
-                  <h3 className="font-semibold text-base line-clamp-1 mb-1" title={movie.title}>{movie.title}</h3>
-                  <div className="flex items-center text-xs text-slate-500 dark:text-slate-400 mb-2 gap-2">
-                    <span>{movie.releaseYear}</span>
-                    <span>•</span>
-                    <span className="line-clamp-1">{movie.genre}</span>
+                <CardContent className="p-4 flex-1 flex flex-col min-w-0">
+                  <h3 className="font-semibold text-base line-clamp-1 mb-1 text-slate-900 dark:text-slate-100" title={movie.title}>{movie.title}</h3>
+                  <div className="flex flex-wrap items-center text-xs text-slate-500 dark:text-slate-400 mb-2 gap-x-2 gap-y-1">
+                    {movie.type && (
+                      <span className="shrink-0 uppercase text-[10px] font-bold bg-slate-100 dark:bg-slate-800 px-1.5 py-0.5 rounded text-slate-600 dark:text-slate-300">
+                        {movie.type}
+                      </span>
+                    )}
+                    <span className="shrink-0">{movie.releaseYear}</span>
+                    <span className="shrink-0">•</span>
+                    <span className="line-clamp-1 break-all text-indigo-500 font-medium">{movie.genre}</span>
                   </div>
-                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-4">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 flex-1">
                     {movie.description}
                   </p>
                   
-                  <div className="mt-auto">
+                  {/* Mobile Actions */}
+                  <div className="flex flex-col gap-2 mt-auto md:hidden mb-3">
+                    <Button 
+                      className="w-full bg-indigo-500 hover:bg-indigo-600 text-white border-none" 
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setTrailerMovie(movie)}
+                    >
+                      <PlayCircle className="w-4 h-4 mr-2 shrink-0" /> <span className="truncate">See Trailer</span>
+                    </Button>
+                    
+                    {movie.added ? (
+                      <Button className="w-full bg-green-500 hover:bg-green-600 text-white" size="sm" disabled>
+                        <CheckCircle className="w-4 h-4 mr-2 shrink-0" /> <span className="truncate">Added</span>
+                      </Button>
+                    ) : (
+                      <Button 
+                        className="w-full" 
+                        size="sm"
+                        variant="default"
+                        onClick={() => handleAddMovie(movie)}
+                        disabled={addingId === movie.title}
+                      >
+                        {addingId === movie.title ? <Loader2 className="w-4 h-4 mr-2 animate-spin shrink-0" /> : <Plus className="w-4 h-4 mr-2 shrink-0" />} 
+                        <span className="truncate">Add to Watchlist</span>
+                      </Button>
+                    )}
+                  </div>
+                  
+                  <div className="mt-auto md:mt-0">
                     {movie.imdbLink && (
                       <Button variant="outline" size="sm" className="w-full text-xs" asChild>
-                        <a href={movie.imdbLink} target="_blank" rel="noopener noreferrer">
-                          <ExternalLink className="w-3 h-3 mr-2" /> View on IMDB
+                        <a href={movie.imdbLink} target="_blank" rel="noopener noreferrer" className="flex">
+                          <ExternalLink className="w-3 h-3 mr-2 shrink-0" /> <span className="truncate">View on IMDB</span>
                         </a>
                       </Button>
                     )}
