@@ -33,20 +33,20 @@ CineTrack is a beautifully designed, full-stack movie tracking application built
 Follow these steps to set up and run CineTrack on your local machine.
 
 ### 1. Clone the repository
-\`\`\`bash
+```
 git clone https://github.com/Siser-Pratap/cineTrack.git
 cd cineTrack
-\`\`\`
+```
 
 ### 2. Install dependencies
-\`\`\`bash
+```bash
 npm install
-\`\`\`
+```
 
 ### 3. Environment Variables
-Create a \`.env\` file in the root directory of the project and add the following keys:
+Create a `.env` file in the root directory of the project and add the following keys:
 
-\`\`\`env
+```env
 # MongoDB Connection String (from MongoDB Atlas)
 DATABASE_URL="mongodb+srv://<username>:<password>@<cluster-url>/cinetrack?retryWrites=true&w=majority"
 
@@ -58,28 +58,28 @@ OMDB_API_KEY="your_omdb_api_key"
 
 # Your personal 6-digit login PIN
 APP_PIN="123456"
-\`\`\`
+```
 
 ### 4. Setup the Database
 Push the Prisma schema to your MongoDB cluster to initialize the collections:
-\`\`\`bash
+```
 npx prisma db push
 npx prisma generate
-\`\`\`
+```
 
 *(Optional)* If you have existing text files (`to_Watch.txt` or `Watched.txt`), you can run the import scripts to bulk-load your movies via the OMDB API:
-\`\`\`bash
+```
 npx tsx scripts/import-movies.ts
 npx tsx scripts/import-watched.ts
-\`\`\`
+```
 
 ### 5. Run the Development Server
-\`\`\`bash
+```
 npm run dev
-\`\`\`
+```
 
 Open [http://localhost:3000](http://localhost:3000) in your browser. 
-Log in with the \`APP_PIN\` you set in your environment variables to access the dashboard!
+Log in with the `APP_PIN` you set in your environment variables to access the dashboard!
 
 ---
 
