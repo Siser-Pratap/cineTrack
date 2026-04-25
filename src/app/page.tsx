@@ -12,7 +12,7 @@ export default function LandingPage() {
           <span>The elegant way to track your movies</span>
         </div>
         
-        <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl bg-clip-text text-transparent bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-400 mb-6">
+        <h1 className="max-w-4xl text-5xl font-extrabold tracking-tight sm:text-6xl md:text-7xl  dark:from-white dark:to-slate-400 mb-6">
           Your Personal Movie Universe.
         </h1>
         
@@ -22,8 +22,8 @@ export default function LandingPage() {
         
         <div className="flex flex-col sm:flex-row gap-4">
           <Button asChild size="lg" className="rounded-full px-8 text-base">
-            <Link href="/login">
-              Go to Dashboard <ChevronRight className="w-4 h-4 ml-2" />
+            <Link href="/login" className="flex gap-2">
+              Go to Dashboard <ChevronRight className="w-4 h-4 ml-2 mt-1" />
             </Link>
           </Button>
           <Button asChild variant="outline" size="lg" className="rounded-full px-8 text-base">

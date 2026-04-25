@@ -1,11 +1,12 @@
 import { prisma } from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
-import { Film, Calendar, Languages, ArrowLeft, PlayCircle, ExternalLink } from 'lucide-react';
+import { Film, Calendar, Languages, ArrowLeft, ExternalLink, Search, Tv } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import { format } from 'date-fns';
 import { EditMovieButton } from '@/components/EditMovieButton';
+import { StreamingProviders } from '@/components/StreamingProviders';
 
 async function getMovie(id: string) {
   try {
@@ -33,9 +34,9 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
     <div className="max-w-5xl mx-auto pb-12 animate-in fade-in duration-500">
       <div className="mb-6 flex justify-between items-center flex-wrap gap-4">
         <Button variant="outline" asChild>
-          <Link href={movie.status === 'Watched' ? '/dashboard/watched' : '/dashboard'}>
+          <Link  className="flex gap-2 p-2" href={movie.status === 'Watched' ? '/dashboard/watched' : '/dashboard'}>
             <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to {movie.status === 'Watched' ? 'Watched List' : 'To Watch List'}
+            Back to {movie.status === 'Watched' ? 'Watched List' : 'Watch List'}
           </Link>
         </Button>
         <EditMovieButton movie={movie} />
@@ -105,16 +106,15 @@ export default async function MovieDetailPage({ params }: { params: Promise<{ id
             </Card>
           )}
 
-          <div className="flex flex-wrap gap-3 pt-6 border-t border-slate-200 dark:border-slate-800 mt-6">
+          {movie.status === 'ToWatch' && (
+            <StreamingProviders title={movie.title} releaseYear={movie.releaseYear || undefined} type={movie.type} />
+          )}
+
+          <div className="flex flex-wrap gap-3 pt-6 p-12 border-t border-slate-200 dark:border-slate-800 mt-6">
             {movie.imdbLink && (
               <>
-                {/* <Button className="bg-indigo-600 hover:bg-indigo-700 text-white" asChild>
-                  <a href={`https://www.imdb.com/find/?q=${encodeURIComponent(movie.title + ' trailer')}`} target="_blank" rel="noopener noreferrer">
-                    <PlayCircle className="w-4 h-4 mr-2" /> Watch Trailer
-                  </a>
-                </Button> */}
-                <Button variant="outline" asChild>
-                  <a href={movie.imdbLink} target="_blank" rel="noopener noreferrer">
+                <Button variant="outline" asChild className="p-4">
+                  <a className="flex p-2" href={movie.imdbLink} target="_blank" rel="noopener noreferrer">
                     <ExternalLink className="w-4 h-4 mr-2" /> View IMDB Page
                   </a>
                 </Button>
