@@ -8,6 +8,20 @@ export async function GET(req: Request) {
   if (!q) return NextResponse.json({ videoId: null });
 
   try {
+    // 1. If an official YouTube API key is provided, use it (Reliable in production)
+    const apiKey = process.env.YOUTUBE_API_KEY;
+    if (apiKey) {
+      const res = await fetch(
+        `https://www.googleapis.com/youtube/v3/search?part=snippet&q=${encodeURIComponent(q + ' official trailer')}&type=video&key=${apiKey}&maxResults=1`
+      );
+      const data = await res.json();
+      
+      if (data.items && data.items.length > 0) {
+        return NextResponse.json({ videoId: data.items[0].id.videoId });
+      }
+    }
+
+    // 2. Fallback to yt-search (Works locally, but often gets blocked in production)
     const r = await ytSearch(q + ' official trailer');
     const videos = r.videos;
     
