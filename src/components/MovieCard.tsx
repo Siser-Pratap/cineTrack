@@ -1,6 +1,6 @@
 import { Card, CardContent } from "./ui/card";
 import { Button } from "./ui/button";
-import { CheckCircle, ExternalLink, Film, Info, Trash2, Loader2 } from "lucide-react";
+import { CheckCircle, ExternalLink, Film, Info, Trash2, Loader2, PlayCircle } from "lucide-react";
 import Link from 'next/link';
 import { useState } from "react";
 
@@ -44,6 +44,17 @@ export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatche
               <Link href={`/dashboard/movie/${movie.id}`} className="flex p-2 gap-2">
                 <Info className="w-4 h-4" /> View Details
               </Link>
+            </Button>
+
+            <Button 
+              className="w-full bg-slate-800/90 hover:bg-slate-700 text-white border-none" 
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent((movie.title || '') + ' ' + (movie.releaseYear || '') + ' official trailer')}`, '_blank');
+              }}
+            >
+              <PlayCircle className="w-4 h-4 mr-2" /> Watch Trailer
             </Button>
             
             {movie.status === 'ToWatch' && onWatched && (
@@ -111,6 +122,18 @@ export function MovieCard({ movie, onWatched, onUpdate }: { movie: any, onWatche
               <Link href={`/dashboard/movie/${movie.id}`} className="flex p-2 gap-2">
                 <Info className="w-4 h-4" /> View Details
               </Link>
+            </Button>
+
+            <Button 
+              className="w-full bg-slate-100 hover:bg-slate-200 text-slate-900 dark:bg-slate-800 dark:hover:bg-slate-700 dark:text-slate-100 border-none" 
+              size="sm"
+              variant="outline"
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent((movie.title || '') + ' ' + (movie.releaseYear || '') + ' official trailer')}`, '_blank');
+              }}
+            >
+              <PlayCircle className="w-4 h-4 mr-2" /> Watch Trailer
             </Button>
             
             {movie.status === 'ToWatch' && onWatched && (
