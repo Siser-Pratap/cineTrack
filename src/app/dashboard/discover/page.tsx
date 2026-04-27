@@ -5,7 +5,6 @@ import { Sparkles, TrendingUp, Compass, Search, Plus, CheckCircle, Loader2, Exte
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { TrailerDialog } from "@/components/TrailerDialog";
 
 export default function DiscoverPage() {
   const [prompt, setPrompt] = useState("");
@@ -14,7 +13,6 @@ export default function DiscoverPage() {
   const [aiReply, setAiReply] = useState<string | null>(null);
   const [addingId, setAddingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [trailerMovie, setTrailerMovie] = useState<any | null>(null);
 
   const fetchRecommendations = async (customPrompt?: string, useHistory: boolean = false, append: boolean = false) => {
     setLoading(true);
@@ -235,7 +233,7 @@ export default function DiscoverPage() {
                     <Button 
                       className="w-full bg-indigo-500 hover:bg-indigo-600 text-white border-none" 
                       variant="outline"
-                      onClick={() => setTrailerMovie(movie)}
+                      onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent((movie.title || '') + ' ' + (movie.releaseYear || '') + ' official trailer')}`, '_blank')}
                     >
                       <PlayCircle className="w-4 h-4 mr-2" /> See Trailer
                     </Button>
@@ -279,7 +277,7 @@ export default function DiscoverPage() {
                       className="w-full bg-indigo-500 hover:bg-indigo-600 text-white border-none" 
                       variant="outline"
                       size="sm"
-                      onClick={() => setTrailerMovie(movie)}
+                      onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent((movie.title || '') + ' ' + (movie.releaseYear || '') + ' official trailer')}`, '_blank')}
                     >
                       <PlayCircle className="w-4 h-4 mr-2 shrink-0" /> <span className="truncate">See Trailer</span>
                     </Button>
@@ -340,14 +338,6 @@ export default function DiscoverPage() {
             </div>
           )}
         </div>
-      )}
-
-      {trailerMovie && (
-        <TrailerDialog 
-          movie={trailerMovie} 
-          isOpen={!!trailerMovie} 
-          setIsOpen={(open) => !open && setTrailerMovie(null)} 
-        />
       )}
     </div>
   );

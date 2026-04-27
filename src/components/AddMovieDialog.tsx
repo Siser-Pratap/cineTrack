@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 import { Search, Plus, PlayCircle } from "lucide-react";
-import { TrailerDialog } from "./TrailerDialog";
 
 export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -14,7 +13,6 @@ export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
   const [loading, setLoading] = useState(false);
   const [page, setPage] = useState(1);
   const [totalResults, setTotalResults] = useState(0);
-  const [trailerMovie, setTrailerMovie] = useState<any | null>(null);
 
   const fetchMovies = async (searchQuery: string, pageNum: number, append: boolean = false) => {
     setLoading(true);
@@ -149,7 +147,7 @@ export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
                     <Button size="sm" className="h-9 text-xs sm:text-sm px-3 sm:px-4 shrink-0" onClick={() => handleAdd(movie)}>
                       <span className="truncate">Add to List</span>
                     </Button>
-                    <Button size="sm" variant="outline" className="h-9 text-xs sm:text-sm px-3 sm:px-4 shrink-0 text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/50" onClick={() => setTrailerMovie(movie)}>
+                    <Button size="sm" variant="outline" className="h-9 text-xs sm:text-sm px-3 sm:px-4 shrink-0 text-indigo-600 border-indigo-200 hover:bg-indigo-50 dark:border-indigo-900/50 dark:text-indigo-400 dark:hover:bg-indigo-950/50" onClick={() => window.open(`https://www.youtube.com/results?search_query=${encodeURIComponent((movie.title || '') + ' ' + (movie.releaseYear || '') + ' official trailer')}`, '_blank')}>
                       <PlayCircle className="w-3 h-3 sm:w-4 sm:h-4 mr-1.5 sm:mr-2 shrink-0" /> <span className="truncate">Trailer</span>
                     </Button>
                   </div>
@@ -169,13 +167,6 @@ export function AddMovieDialog({ onAdd }: { onAdd: () => void }) {
         </div>
       </Card>
       
-      {trailerMovie && (
-        <TrailerDialog 
-          movie={trailerMovie} 
-          isOpen={!!trailerMovie} 
-          setIsOpen={(open) => !open && setTrailerMovie(null)} 
-        />
-      )}
     </div>
   );
 }
